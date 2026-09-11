@@ -207,6 +207,37 @@ assert.match(wrongFormat.message, /not a PNG, JPEG, WebP, or GIF/u, 'a non-image
 
 assert.equal(received.length, before, 'no refusal reached the relay')
 
+// ── a relative outputDir follows the calling session workspace ─────────────
+
+/** The tool definition one relative-outputDir deployment registers. */
+let relativeTool
+
+/** A deployment configured with a workspace-relative copy directory. */
+const relativeCtx = {
+  logger: { info() {}, warn() {} },
+  get: name => (name === 'attachments' ? store : undefined),
+  inject: (names, callback) => { callback(relativeCtx) },
+  tools: { register(definition) { relativeTool = definition } },
+}
+
+apply(relativeCtx, {
+  baseUrl: `http://127.0.0.1:${port}/v1`,
+  apiKeyEnv: 'TEST_IMAGE_KEY',
+  outputDir: 'generated-images',
+})
+
+const sessionCwd = await mkdtemp(join(tmpdir(), 'recycle-image-gen-session-'))
+const relative = await relativeTool.execute(
+  { prompt: 'a workspace-relative copy', n: 1 },
+  { signal: AbortSignal.timeout(5000), agent: { session: { header: { cwd: sessionCwd } } } },
+)
+const relativePath = relative.images[0].path
+assert.ok(
+  relativePath?.startsWith(join(sessionCwd, 'generated-images')),
+  'a relative outputDir resolves against the calling session workspace',
+)
+assert.ok((await readFile(relativePath)).equals(PNG_BYTES), 'the workspace copy holds the exact returned bytes')
+
 // ── the settings section ───────────────────────────────────────────────────
 
 /** The section registration one settings-mounting deployment hands back. */

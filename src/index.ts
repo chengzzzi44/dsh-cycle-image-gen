@@ -15,7 +15,7 @@
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { isAbsolute, join, resolve } from 'node:path'
 import { resolveConfig, type ImageGenConfig, type ResolvedImageGenConfig } from './config.ts'
 import { IMAGE_GEN_SETTINGS_NAMESPACE, ImageGenConfigSchema } from './settings.ts'
 import { requestImages, sniffMediaType, type DecodedImage, type ImageMediaType, type InputImage } from './relay.ts'
@@ -97,6 +97,18 @@ interface PluginContextLike {
 /** Structural view of the immutable execution context. */
 interface ToolRunContextLike {
   signal: AbortSignal
+  /**
+   * The agent on whose behalf the call runs. Its session header carries the
+   * workspace root a relative `outputDir` resolves against; absent on a
+   * non-agent caller.
+   */
+  agent?: {
+    session?: {
+      header?: {
+        cwd?: string
+      }
+    }
+  }
 }
 
 /** The resolved generation arguments. */
@@ -329,6 +341,23 @@ function attachmentFailure(error: unknown, mediaType: ImageMediaType): Error {
 }
 
 /**
+ * Resolve the configured copy directory for one call.
+ *
+ * A relative `outputDir` is resolved against the calling session's workspace
+ * (`exec.agent.session.header.cwd`, the same root the built-in file tools and
+ * the Web sidebar use), so copies land where the workspace surfaces may read
+ * them. An absolute `outputDir` is used verbatim, and a call with no agent
+ * falls back to the process working directory.
+ * @param configured - the configured `outputDir`.
+ * @param exec - the execution context carrying the calling agent.
+ * @returns the absolute directory this call writes copies into.
+ */
+function resolveOutputDir(configured: string, exec: ToolRunContextLike): string {
+  if (isAbsolute(configured)) return configured
+  return resolve(exec.agent?.session?.header?.cwd ?? process.cwd(), configured)
+}
+
+/**
  * Write the workspace copy of one image. Content-addressed names make the write
  * idempotent, so a retried call with identical bytes cannot produce two files.
  * @param directory - configured absolute output directory.
@@ -452,6 +481,7 @@ function generateImageTool(
         ...inputs === undefined ? {} : { inputs },
         ...mask === undefined ? {} : { mask },
       }, exec.signal)
+      const outputDir = config.outputDir === undefined ? undefined : resolveOutputDir(config.outputDir, exec)
       const images: GeneratedImageValue[] = []
       for (const decoded of outcome.images as DecodedImage[]) {
         assertDeploymentAccepts(store, decoded.mediaType)
@@ -467,9 +497,9 @@ function generateImageTool(
         } catch (error: unknown) {
           throw attachmentFailure(error, decoded.mediaType)
         }
-        const path = config.outputDir === undefined
+        const path = outputDir === undefined
           ? undefined
-          : await writeWorkspaceCopy(config.outputDir, ref, decoded.data)
+          : await writeWorkspaceCopy(outputDir, ref, decoded.data)
         images.push({
           attachmentId: ref.attachmentId,
           mediaType: ref.mediaType,

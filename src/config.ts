@@ -35,7 +35,9 @@ export interface ImageGenConfig {
   /** Upper bound accepted for one call's `n`. */
   maxImagesPerCall?: number
   /**
-   * Absolute directory receiving one copy of every generated image. The
+   * Directory receiving one copy of every generated image. An absolute path is
+   * used verbatim; a relative path resolves against the calling session's
+   * workspace, which is where the Web sidebar and file tools may read it. The
    * attachment store always keeps the durable copy; this copy exists so a
    * person can open or share the file directly.
    */

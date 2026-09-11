@@ -12,4 +12,6 @@
         baseUrl: 'https://your-relay.example.com/v1'
         model: 'gpt-image-2.5'
         apiKeyEnv: GPT_IMAGE_API_KEY
-        outputDir: '/absolute/path/to/recycle-image-gen/output'
+        # Relative: each call writes into the session workspace, so the Web
+        # sidebar and openFile can read the copy.
+        outputDir: 'generated-images'

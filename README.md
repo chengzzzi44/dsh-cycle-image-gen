@@ -12,7 +12,7 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 生成图会在 Web UI 里出现**两次**，两处都来自同一份耐久附件引用：
 
 1. **工具卡片里**（`generate_image` 那一步）—— 在 turn 的「过程 / 思考链」折叠区内。**所有**工具结果都在这里，不是图片特有的。
-2. **收尾 assistant 消息下方的「Generated image」行** —— 缩略图，在过程折叠区**之外**，点一下用 `openFile` 在右侧栏打开工作区副本（需配置 `outputDir`）。
+2. **收尾 assistant 消息下方的「Generated image」行** —— 缩略图，在过程折叠区**之外**，点一下用 `openFile` 在右侧栏打开工作区副本（需配置 `outputDir`；侧栏只读**会话工作区内**的文件，所以推荐用相对路径）。
 
 第二处是纯插件实现的：`ui-chat` 只允许少数几种节点跳出过程区，`turn-tail` 是其中唯一可被插件认领的（`conversation.chat.turnTail` chain slot）。它本身只给 `{turn, seq, openFile}`、不带图片加载器，所以插件转而注入 `uiConversation` service，用 `imageUrl(sessionId, ref)` / `peekImageUrl` 自己拿会话授权的 URL —— 这与聊天视图给消息和工具画廊用的是同一个加载器。
 
@@ -62,7 +62,8 @@ dsh --profile web --dump-config | grep -A 8 "recycle-image-gen"
     baseUrl: 'https://your-relay.example.com/v1'
     model: 'gpt-image-2.5'
     apiKeyEnv: GPT_IMAGE_API_KEY
-    outputDir: '/absolute/path/to/generated-images'
+    # 相对路径会落在「当前会话工作区」里，Web 侧栏才能读取它
+    outputDir: 'generated-images'
 ```
 
 一个字都不改文件的最小配置是环境变量：`DSH_IMAGE_GEN_BASE_URL` 与 `DSH_IMAGE_GEN_MODEL`（bundle 层的默认值就是读这两个）。
@@ -115,7 +116,7 @@ dsh web
 
 ## 不安装、直接开发调试
 
-`--patch` overlay 可以按绝对路径挂载插件，改完 `npm run build` 重启即可。先把 `examples/web-overlay.cordis.patch.yml` 里的 `name` 和 `outputDir` 两个绝对路径占位符替换成本机实际路径：
+`--patch` overlay 可以按绝对路径挂载插件，改完 `npm run build` 重启即可。先把 `examples/web-overlay.cordis.patch.yml` 里的 `name` 占位符替换成本机实际路径（`outputDir` 已是相对路径，会落在会话工作区）：
 
 ```sh
 # 在 DeepSeek Harness 源码 checkout 里执行；overlay 用绝对路径，因此与 cwd 无关
@@ -138,7 +139,7 @@ pnpm dsh --profile web --patch /path/to/recycle-image-gen/examples/web-overlay.c
 | `defaultQuality` | —（不发送该字段） | 调用未给 `quality` 时使用 |
 | `requestTimeoutMs` | `300000` | 整次请求预算，含图片下载 |
 | `maxImagesPerCall` | `4` | 单次调用 `n` 的上限 |
-| `outputDir` | —（不落盘） | 绝对目录；设置后每个生成图额外写一份文件，便于直接打开或分享 |
+| `outputDir` | —（不落盘） | 副本目录。绝对路径原样使用；**相对路径在每次调用时相对当前会话工作区解析**（这样 Web 侧栏、`openFile` 和内置文件工具都能读到它）。设置后每张生成图额外写一份文件，便于直接打开或分享 |
 | `extraBody` | `{}` | 合并进请求体的额外字段，用于中转站私有参数 |
 | `extraHeaders` | `{}` | 额外请求头，用于非 Bearer 的鉴权方案 |
 
