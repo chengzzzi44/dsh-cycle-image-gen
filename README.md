@@ -11,11 +11,11 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 
 **文生图** —— 图片内联显示在工具结果与回复下方的缩略图行里，同时落一份可在右侧栏打开的工作区副本：
 
-![生成一只小狗：文生图](docs/images/text-to-image.png)
+![生成一只小狗：文生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/text-to-image.png)
 
 **图生图** —— 把上一张图的路径填进 `image` 参数继续编辑，原图保留、新图另存：
 
-![让小狗站起来戴上帽子：图生图](docs/images/image-to-image.png)
+![让小狗站起来戴上帽子：图生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/image-to-image.png)
 
 ## 图显示在哪里
 
