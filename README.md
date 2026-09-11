@@ -7,6 +7,16 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 | Host（Node） | `lib/index.js` | 注册 `generate_image` 工具：请求中转站、解码图片、写入附件库、可选落盘；并注册 `image-gen` 设置段（地址 / 模型 / 密钥引用） |
 | Client（浏览器） | `lib/client.js` | 注册四处 UI：`tool.call.toolview` 的工具卡片、`conversation.chat.turnTail` 的收尾缩略图行、「设置 → 插件 → 插件配置」里的 `image-gen` 设置卡片，以及右侧栏的 `image` tab 类型（把工作区内的图片副本正常显示出来） |
 
+## 效果
+
+**文生图** —— 图片内联显示在工具结果与回复下方的缩略图行里，同时落一份可在右侧栏打开的工作区副本：
+
+![生成一只小狗：文生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/text-to-image.png)
+
+**图生图** —— 把上一张图的路径填进 `image` 参数继续编辑，原图保留、新图另存：
+
+![让小狗站起来戴上帽子：图生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/image-to-image.png)
+
 ## 图显示在哪里
 
 生成图会在 Web UI 里出现**两次**，两处都来自同一份耐久附件引用：
