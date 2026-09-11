@@ -1,0 +1,28 @@
+# The recycle-image-gen bundle layer: one dual-face row.
+#
+# The node half (the package's `main`, lib/index.js) registers the
+# `generate_image` tool and the `image-gen` settings section. The browser half
+# (`exports["./client"]`, lib/client.js) registers the keyed
+# `tool.call.toolview` card for that tool and the `image-gen` card in the
+# Plugins settings section, which `dsh-client-modules` serves as
+# /plugins/recycle-image-gen/client.js because this row's package declares
+# `dsh.client`.
+#
+# Every value below is a default. Later layers win per row and a patch replaces
+# the whole `config`, so restate every key you keep when overriding in your
+# profile's cordis.patch.yml. This `config` is also the base layer of the
+# `image-gen` settings section, so a value set from the Web settings page
+# overrides the one here without editing this file.
+
+- insert:
+    - id: image-gen
+      name: recycle-image-gen
+      config:
+        # Full URL prefix up to and including the version segment. Unset leaves
+        # the tool registered but unusable: it reports exactly which field to set.
+        baseUrl: !!js process.env.DSH_IMAGE_GEN_BASE_URL
+        model: !!js process.env.DSH_IMAGE_GEN_MODEL ?? 'gpt-image-2.5'
+        # Credential reference. Resolved through the credentials service first
+        # (which covers the launching environment and .env), then the process
+        # environment directly.
+        apiKeyEnv: GPT_IMAGE_API_KEY

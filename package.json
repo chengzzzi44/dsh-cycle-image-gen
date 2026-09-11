@@ -1,0 +1,68 @@
+{
+  "name": "recycle-image-gen",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Image generation tool for DeepSeek Harness over any OpenAI-compatible images endpoint, with an inline Web UI gallery.",
+  "license": "MIT",
+  "author": "chengzzzi44",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chengzzzi44/recycle-image-gen.git"
+  },
+  "homepage": "https://github.com/chengzzzi44/recycle-image-gen#readme",
+  "bugs": {
+    "url": "https://github.com/chengzzzi44/recycle-image-gen/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "image-generation",
+    "openai-compatible",
+    "cordis"
+  ],
+  "engines": {
+    "node": ">=22.19"
+  },
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "DISTRIBUTE.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "selftest": "node scripts/selftest.mjs && node scripts/client-selftest.mjs",
+    "test": "npm run selftest",
+    "prepare": "node build.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^18.3.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
+  }
+}

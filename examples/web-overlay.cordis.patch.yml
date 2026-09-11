@@ -1,0 +1,15 @@
+# Development overlay: mount the plugin straight from this directory, without
+# installing it into any profile. Replace the absolute path with `pwd` output.
+#
+#   pnpm dsh --profile web --patch ./examples/web-overlay.cordis.patch.yml --port 3099
+#
+# A later `--patch` layer wins per row, so this file also overrides the
+# bundle's own config when the plugin is installed.
+- insert:
+    - id: image-gen
+      name: '/absolute/path/to/recycle-image-gen/lib/index.js'
+      config:
+        baseUrl: 'https://your-relay.example.com/v1'
+        model: 'gpt-image-2.5'
+        apiKeyEnv: GPT_IMAGE_API_KEY
+        outputDir: '/absolute/path/to/recycle-image-gen/output'

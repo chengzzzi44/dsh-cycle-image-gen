@@ -1,0 +1,7 @@
+node_modules/
+lib/
+selftest-output/
+output/
+*.log
+*.tgz
+.DS_Store
