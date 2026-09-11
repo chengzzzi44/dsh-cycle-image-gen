@@ -32,7 +32,7 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 
 前置条件：一个可用的 `dsh`，以及 **PATH 里的 `pnpm`**（`dsh plugin` 把参数转发给 profile 目录里的 pnpm，缺 pnpm 会以 127 退出）。
 
-**从 npm 安装**（推荐；包名由 npm 解析，尚未发布时请用下面两种方式）：
+**从 npm 安装**（推荐）：
 
 ```sh
 dsh plugin --profile web add recycle-image-gen
