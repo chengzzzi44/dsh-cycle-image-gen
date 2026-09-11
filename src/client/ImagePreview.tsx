@@ -9,7 +9,7 @@
  * @module recycle-image-gen/client/ImagePreview
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import type { Translate } from './locales.ts'
 
@@ -57,32 +57,47 @@ function blobPart(data: Uint8Array): ArrayBuffer {
 export function ImagePreview({ useTabInfo, sessionId, load, t }: ImagePreviewProps): ReactNode {
   const { tab } = useTabInfo()
   const address = tab.address
-  const signal = tab.signal
+  // The tab object is rebuilt on every render, so the effect keys on the address
+  // and session alone and reads the loader and the record signal through a ref:
+  // depending on either identity would re-read on every render.
+  const latest = useRef({ load, signal: tab.signal })
+  latest.current = { load, signal: tab.signal }
   const [url, setUrl] = useState<string | null>(null)
-  const [failed, setFailed] = useState(false)
+  const [failure, setFailure] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
     let objectUrl: string | undefined
     setUrl(null)
-    setFailed(false)
-    load(address, sessionId, signal).then(
+    setFailure(null)
+    const { load: read, signal } = latest.current
+    read(address, sessionId, signal).then(
       ({ data, mediaType }) => {
         if (cancelled) return
         objectUrl = URL.createObjectURL(new Blob([blobPart(data)], { type: mediaType }))
         setUrl(objectUrl)
       },
-      () => {
-        if (!cancelled) setFailed(true)
+      (error: unknown) => {
+        if (cancelled) return
+        const detail = error instanceof Error ? error.message : String(error)
+        console.warn('recycle-image-gen: the image tab could not read', address, error)
+        setFailure(detail)
       },
     )
     return () => {
       cancelled = true
       if (objectUrl !== undefined) URL.revokeObjectURL(objectUrl)
     }
-  }, [address, sessionId, load, signal])
+  }, [address, sessionId])
 
-  if (failed) return <div style={STYLES.note}>{t('imageTab.failed')}</div>
+  if (failure !== null) {
+    return (
+      <div style={STYLES.note}>
+        <div>{t('imageTab.failed')}</div>
+        <div style={STYLES.detail}>{failure}</div>
+      </div>
+    )
+  }
   if (url === null) return <div style={STYLES.note}>{t('image.loading')}</div>
   return (
     <div style={STYLES.root}>
@@ -103,4 +118,5 @@ const STYLES = {
     border: '1px solid rgba(128, 128, 128, 0.25)',
   },
   note: { padding: 12, fontSize: 12, opacity: 0.65 },
+  detail: { paddingTop: 4, fontSize: 11, opacity: 0.6, wordBreak: 'break-all' },
 } satisfies Record<string, CSSProperties>

@@ -170,7 +170,9 @@ export async function loadWorkspaceImage(
   for (;;) {
     const result = await remote.readBytes(sessionId, path, { offset }, signal)
     if (result.ok === false || result.value === undefined) {
-      throw new Error(`recycle-image-gen: reading "${path}" failed`)
+      const failure = (result as { error?: { code?: string, message?: string } }).error
+      const detail = failure?.message ?? failure?.code ?? 'read failed'
+      throw new Error(`${detail} (workspace path "${path}")`)
     }
     const chunk = decodeBase64(result.value.data ?? '')
     if (chunk.length === 0) break

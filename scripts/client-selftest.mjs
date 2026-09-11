@@ -195,7 +195,11 @@ assert.equal(imageType.title(imageAddress), 'image-sha256abc.png', 'the chip sho
 assert.equal(tabPanes.tab?.options.key, 'recycle-image-gen/image', 'the body registers under the type id')
 assert.equal(tabPanes.tab?.options.locale, 'recycle-image-gen', 'the body declares its dictionary')
 
-const loaded = await tabPanes.tab.options.inject().load(imageAddress, 'session-1', new AbortController().signal)
+/** The registration's inject face: a plain object, or a factory returning one. */
+const imageFace = typeof tabPanes.tab.options.inject === 'function'
+  ? tabPanes.tab.options.inject()
+  : tabPanes.tab.options.inject
+const loaded = await imageFace.load(imageAddress, 'session-1', new AbortController().signal)
 assert.equal(loaded.mediaType, 'image/png', 'the extension names the media type')
 assert.ok(Buffer.from(loaded.data).equals(PNG_BYTES), 'the tab loads the exact file bytes')
 assert.deepEqual(reads, [{
@@ -211,10 +215,29 @@ const absolute = await tabPages(
 assert.equal(absolute.sessionId, 'session-9', 'an absolute address is read through the seat session')
 assert.equal(absolute.path, '/tmp/elsewhere/image.png', 'an absolute address keeps its leading slash')
 
+// A refused read surfaces the Host's own reason, so the pane explains itself.
+const failPanes = {}
+client.apply(makeCtx({
+  locale,
+  sidebarRightTabs: imageServices.sidebarRightTabs,
+  'remote.workspaceFiles': {
+    readBytes: () => Promise.resolve({
+      ok: false,
+      error: { code: 'workspace-file/outside-workspace', message: 'is outside the workspace' },
+    }),
+  },
+}, failPanes))
+const failFace = typeof failPanes.tab.options.inject === 'function'
+  ? failPanes.tab.options.inject()
+  : failPanes.tab.options.inject
+const refusal = await failFace.load(imageAddress, 'session-1', new AbortController().signal)
+  .then(() => null, error => error)
+assert.match(refusal.message, /is outside the workspace/u, 'a refused read surfaces the Host reason in the pane')
+
 /** Load one address and report the read it performed. */
 async function tabPages(address, sessionId) {
   reads.length = 0
-  await tabPanes.tab.options.inject().load(address, sessionId, new AbortController().signal)
+  await imageFace.load(address, sessionId, new AbortController().signal)
   return reads[0]
 }
 
