@@ -234,6 +234,7 @@ npm test             # = npm run selftest：两个无密钥自测，见下
 - `npm ci` 安装依赖并构建（`prepare` 会产出 `lib/`），`npm test` 跑两个无密钥自测，`npm run typecheck` 做类型检查；CI 在 Node 22 / 24 上跑同样的三步。
 - 改动 `src/*.ts` 或 `src/client/*` 后必须 `npm run build`：profile 装载的是 `lib/`，不是源码。
 - 行为或模型可见输出有变化时，请同步更新本 README 的对应章节。
+- 发布新版本、npm token 怎么配、报错怎么排查，见 [docs/PUBLISH.md](docs/PUBLISH.md)。
 
 ## 已验证版本
 
