@@ -5,14 +5,14 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 | 半边 | 产物 | 作用 |
 |---|---|---|
 | Host（Node） | `lib/index.js` | 注册 `generate_image` 工具：请求中转站、解码图片、写入附件库、可选落盘；并注册 `image-gen` 设置段（地址 / 模型 / 密钥引用） |
-| Client（浏览器） | `lib/client.js` | 注册三处 UI：`tool.call.toolview` 的工具卡片、`conversation.chat.turnTail` 的收尾缩略图行，以及「设置 → 插件 → 插件配置」里的 `image-gen` 设置卡片 |
+| Client（浏览器） | `lib/client.js` | 注册四处 UI：`tool.call.toolview` 的工具卡片、`conversation.chat.turnTail` 的收尾缩略图行、「设置 → 插件 → 插件配置」里的 `image-gen` 设置卡片，以及右侧栏的 `image` tab 类型（把工作区内的图片副本正常显示出来） |
 
 ## 图显示在哪里
 
 生成图会在 Web UI 里出现**两次**，两处都来自同一份耐久附件引用：
 
 1. **工具卡片里**（`generate_image` 那一步）—— 在 turn 的「过程 / 思考链」折叠区内。**所有**工具结果都在这里，不是图片特有的。
-2. **收尾 assistant 消息下方的「Generated image」行** —— 缩略图，在过程折叠区**之外**，点一下用 `openFile` 在右侧栏打开工作区副本（需配置 `outputDir`；侧栏只读**会话工作区内**的文件，所以推荐用相对路径）。
+2. **收尾 assistant 消息下方的「Generated image」行** —— 缩略图，在过程折叠区**之外**，点一下用 `openFile` 打开工作区副本，由本插件注册的右侧栏 **image tab** 显示（需配置 `outputDir`；侧栏只读**会话工作区内**的文件，所以推荐用相对路径）。插件自带的文本预览读不了图片，image tab 在扩展优先级上高于它，因此图片会落到正确的查看器里。
 
 第二处是纯插件实现的：`ui-chat` 只允许少数几种节点跳出过程区，`turn-tail` 是其中唯一可被插件认领的（`conversation.chat.turnTail` chain slot）。它本身只给 `{turn, seq, openFile}`、不带图片加载器，所以插件转而注入 `uiConversation` service，用 `imageUrl(sessionId, ref)` / `peekImageUrl` 自己拿会话授权的 URL —— 这与聊天视图给消息和工具画廊用的是同一个加载器。
 
@@ -206,7 +206,7 @@ npm test             # = npm run selftest：两个无密钥自测，见下
 - **只认 OpenAI 兼容响应。** 要求响应体是 `{ data: [{ b64_json | url }] }`。响应结构不同的中转站需要改 `src/relay.ts`。
 - **返回 URL 时不带凭据下载。** 图片 URL 常常指向另一台主机，为避免泄露中转站密钥，下载请求不带 `Authorization`；需要鉴权的图床会失败。
 - **`extraBody` 在 multipart 路径下只发标量。** 结构化值无法表达为 multipart 字段，只有文生图路径能发。
-- **卡片是精简版。** 没有灯箱放大、没有下载按钮；点击图片会用 `openFile` 打开工作区副本（仅当配置了 `outputDir`）。
+- **卡片是精简版。** 没有灯箱放大、没有下载按钮；点击图片会用 `openFile` 打开工作区副本（仅当配置了 `outputDir`），由右侧栏的 image tab 全尺寸显示。图片超过 32 MB 时该 tab 会拒绝加载（附件库里仍有原件）。
 - **收尾缩略图行可能被产出文件行挤掉。** `conversation.chat.turnTail` 是 chain，同 turn 只渲染第一个认领者；随附的 web 组合里 `ui-deliverables` 的条目先注册，所以既生图又改文件的 turn 由它认领。
 - **缩略图行只有图片本身和文件名。** turn-tail 的 owner 不提供灯箱或布局上下文，所以这一行是固定 120px 高的缩略图，不是完整画廊。
 - **文案走 `ctx.locale` 字典（命名空间 `recycle-image-gen`）。** 因此浏览器半边把 `locale` 声明为必需依赖：组合里没有 locale 服务时整个浏览器半边不激活（Host 半边的工具不受影响）。

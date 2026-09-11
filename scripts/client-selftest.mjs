@@ -26,6 +26,12 @@ import { pathToFileURL } from 'node:url'
 import { runInThisContext } from 'node:vm'
 import { build } from 'esbuild'
 
+/** A 1x1 PNG; the tab loader only moves its bytes. */
+const PNG_BYTES = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+)
+
 /** DOM-free stand-ins for the bundle's module-table requests. */
 const REACT_STUB = {
   useState: () => [null, () => {}],
@@ -91,6 +97,7 @@ const makeCtx = (services, sink = mounted) => ({
       if (options.name === 'conversation.chat.turnTail') sink.tail = { options, component }
       if (options.name === 'tool.call.toolview') sink.toolview = { options, component }
       if (options.name === 'settings.plugin.item') sink.item = { options, component }
+      if (options.name === 'sidebar.right.pane.tab') sink.tab = { options, component }
       return () => {}
     },
   },
@@ -152,6 +159,65 @@ assert.deepEqual(boundScopes, [{ namespace: 'image-gen' }], 'the card binds that
 assert.equal(typeof settingsMounted.item.component, 'function', 'the card renders through a component')
 assert.equal(settingsMounted.item.options.locale, 'recycle-image-gen', 'the card declares its dictionary')
 assert.ok(settingsMounted.item.options.inject().controller, 'the controller rides the registration inject face')
+
+// ── the right-Sidebar image tab ────────────────────────────────────────────
+
+const tabTypes = []
+const tabPanes = {}
+const reads = []
+const imageServices = {
+  locale,
+  sidebarRightTabs: {
+    register(definition) {
+      tabTypes.push(definition)
+      return () => {}
+    },
+  },
+  'remote.workspaceFiles': {
+    readBytes(sessionId, path, range) {
+      reads.push({ sessionId, path, range })
+      return Promise.resolve({ ok: true, value: { data: PNG_BYTES.toString('base64'), eof: true, bytes: PNG_BYTES.length } })
+    },
+  },
+}
+client.apply(makeCtx(imageServices, tabPanes))
+
+assert.equal(tabTypes.length, 1, 'the image tab type registers once')
+const [imageType] = tabTypes
+assert.equal(imageType.id, 'recycle-image-gen/image', 'the type registers under its own id')
+assert.equal(imageType.kind, 'image', 'the type owns its own kind')
+assert.equal(imageType.priority, 'extension', 'the image type outranks the shipped text fallback')
+const imageAddress = 'dsh-resource://file/session/session-1/generated-images/image-sha256abc.png'
+assert.equal(imageType.canOpen(imageAddress), true, 'an image path is claimed')
+assert.equal(imageType.canOpen('dsh-resource://file/session/session-1/notes.md'), false, 'a non-image path is declined')
+assert.equal(imageType.canOpen('dsh-resource://attachment/sha256:abc'), false, 'a non-file address is declined')
+assert.equal(imageType.title(imageAddress), 'image-sha256abc.png', 'the chip shows the address basename')
+assert.equal(tabPanes.tab?.options.key, 'recycle-image-gen/image', 'the body registers under the type id')
+assert.equal(tabPanes.tab?.options.locale, 'recycle-image-gen', 'the body declares its dictionary')
+
+const loaded = await tabPanes.tab.options.inject().load(imageAddress, 'session-1', new AbortController().signal)
+assert.equal(loaded.mediaType, 'image/png', 'the extension names the media type')
+assert.ok(Buffer.from(loaded.data).equals(PNG_BYTES), 'the tab loads the exact file bytes')
+assert.deepEqual(reads, [{
+  sessionId: 'session-1',
+  path: 'generated-images/image-sha256abc.png',
+  range: { offset: 0 },
+}], 'the address path and session reach the workspace-files read')
+
+const absolute = await tabPages(
+  'dsh-resource://file/absolute/tmp/elsewhere/image.png',
+  'session-9',
+)
+assert.equal(absolute.sessionId, 'session-9', 'an absolute address is read through the seat session')
+assert.equal(absolute.path, '/tmp/elsewhere/image.png', 'an absolute address keeps its leading slash')
+
+/** Load one address and report the read it performed. */
+async function tabPages(address, sessionId) {
+  reads.length = 0
+  await tabPanes.tab.options.inject().load(address, sessionId, new AbortController().signal)
+  return reads[0]
+}
+
 
 // ── 2. the turn-tail fold, straight from source ────────────────────────────
 

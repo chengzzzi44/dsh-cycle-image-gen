@@ -24,8 +24,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { GeneratedTail } from './GeneratedTail.tsx'
+import { ImagePreview } from './ImagePreview.tsx'
 import { SettingsCard } from './settings-card.tsx'
 import { NS, en, zh, type Translate } from './locales.ts'
+import {
+  IMAGE_TAB_ID, imageTabDefinition, loadWorkspaceImage, parseFileAddress, type WorkspaceFilesRemoteLike,
+} from './image-tab.ts'
 import {
   IMAGE_GEN_SETTINGS_NAMESPACE, ImageGenSettingsController,
   type CredentialsRemoteLike, type RemoteEventsLike, type SettingsScopeLike,
@@ -106,6 +110,11 @@ interface ClientContextLike {
 /** Structural view of the locale service this plugin registers its dictionaries with. */
 interface LocaleLike {
   register(ns: string, dicts: Record<string, Record<string, string>>): () => void
+}
+
+/** Structural view of the right-Sidebar tab registry. */
+interface SidebarRightTabsLike {
+  register(definition: unknown): () => void
 }
 
 /** Structural view of the service a settings card binds its namespace through. */
@@ -321,8 +330,8 @@ export const inject = ['slots', 'locale']
 
 /**
  * Register the browser half: this plugin's dictionaries, the keyed Tool view
- * that renders one `generate_image` call, the turn-tail row, and the `image-gen`
- * settings card.
+ * that renders one `generate_image` call, the turn-tail row, the `image-gen`
+ * settings card, and the right-Sidebar image tab an opened copy lands in.
  *
  * Each optional surface is reached through a scoped injection, so a dsh that
  * lacks that service keeps everything else this plugin registers; the tool card
@@ -339,11 +348,50 @@ export function apply(ctx: ClientContextLike): void {
   ctx.effect(() => locale.register(NS, { zh, en }), 'recycle-image-gen: dictionaries')
   registerTurnTail(ctx)
   registerSettingsCard(ctx)
+  registerImageTab(ctx)
   ctx.slots.inject('tool.call.toolview', () => ctx.slots.register({
     name: 'tool.call.toolview',
     key: TOOL_NAME,
     locale: NS,
   }, GeneratedImageCard))
+}
+
+/**
+ * Register the right-Sidebar tab type that displays a workspace image.
+ *
+ * The tab registry and the workspace-files Remote are reached through a scoped
+ * injection, so a dsh without them keeps everything else this plugin registers;
+ * opening an image copy then falls back to the shipped text preview, which
+ * refuses it.
+ * @param ctx - registrant context.
+ */
+function registerImageTab(ctx: ClientContextLike): void {
+  const inject = ctx.inject
+  if (typeof inject !== 'function') return
+  inject.call(ctx, ['sidebarRightTabs', 'remote.workspaceFiles'], (tabCtx: ClientContextLike) => {
+    const tabs = tabCtx.get('sidebarRightTabs') as SidebarRightTabsLike | undefined
+    const remote = tabCtx.get('remote.workspaceFiles') as WorkspaceFilesRemoteLike | undefined
+    if (tabs === undefined || typeof tabs.register !== 'function' || remote === undefined) return
+    try {
+      tabCtx.effect(() => tabs.register(imageTabDefinition()), 'recycle-image-gen: image tab type')
+      tabCtx.slots.inject('sidebar.right.pane.tab', () => tabCtx.slots.register({
+        name: 'sidebar.right.pane.tab',
+        key: IMAGE_TAB_ID,
+        locale: NS,
+        inject: () => ({
+          load: async (address: string, sessionId: string, signal: AbortSignal) => {
+            const parsed = parseFileAddress(address)
+            if (parsed === undefined) throw new Error(`recycle-image-gen: not a file address "${address}"`)
+            return loadWorkspaceImage(remote, parsed.sessionId ?? sessionId, parsed.path, signal)
+          },
+        }),
+      }, ImagePreview))
+    } catch (error: unknown) {
+      // A sidebar surface this plugin does not recognize must cost the tab,
+      // never the tool card registered by the same apply.
+      console.warn('recycle-image-gen: the image tab could not be registered, so image copies open in the text preview instead', error)
+    }
+  })
 }
 
 /**
