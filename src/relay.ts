@@ -3,7 +3,7 @@
  * request, the response decode, and the bytes-to-media-type check; it never
  * touches the attachment store or the tool registry.
  *
- * @module recycle-image-gen/relay
+ * @module dsh-cycle-image-gen/relay
  */
 
 import type { ResolvedImageGenConfig } from './config.ts'
@@ -137,7 +137,7 @@ async function requestFailure(response: Response, context: { url: string, model:
   const body = await boundedText(response)
   const detail = providerMessage(body) ?? body
   const parts = [
-    `recycle-image-gen: the relay returned HTTP ${response.status} ${response.statusText}`.trim()
+    `dsh-cycle-image-gen: the relay returned HTTP ${response.status} ${response.statusText}`.trim()
     + ` for model "${context.model}" at ${context.url}`,
   ]
   if (detail.length > 0) parts.push(detail)
@@ -166,15 +166,15 @@ async function decodeEntry(
     // points at a different host, and sending the key there would leak it.
     const download = await fetch(entry.url, { signal: requestSignal })
     if (!download.ok) {
-      throw new Error(`recycle-image-gen: the relay returned an image URL that failed to download (HTTP ${download.status})`)
+      throw new Error(`dsh-cycle-image-gen: the relay returned an image URL that failed to download (HTTP ${download.status})`)
     }
     bytes = new Uint8Array(await download.arrayBuffer())
   } else {
-    throw new Error('recycle-image-gen: the relay returned a data entry with neither "b64_json" nor "url"')
+    throw new Error('dsh-cycle-image-gen: the relay returned a data entry with neither "b64_json" nor "url"')
   }
   const mediaType = sniffMediaType(bytes)
   if (mediaType === undefined) {
-    throw new Error('recycle-image-gen: the relay returned bytes that are not a PNG, JPEG, WebP, or GIF image')
+    throw new Error('dsh-cycle-image-gen: the relay returned bytes that are not a PNG, JPEG, WebP, or GIF image')
   }
   const revised = entry.revised_prompt
   return {
@@ -273,7 +273,7 @@ export async function requestImages(
   signal: AbortSignal | undefined,
 ): Promise<GenerationOutcome> {
   if (config.baseUrl === undefined) {
-    throw new Error('recycle-image-gen: config.baseUrl is not set, so no relay endpoint is known')
+    throw new Error('dsh-cycle-image-gen: config.baseUrl is not set, so no relay endpoint is known')
   }
   const quality = request.quality ?? config.defaultQuality
   const size = request.size ?? config.defaultSize
@@ -319,20 +319,20 @@ export async function requestImages(
   try {
     payload = await response.json()
   } catch (error: unknown) {
-    throw new Error('recycle-image-gen: the relay returned a body that is not JSON', { cause: error })
+    throw new Error('dsh-cycle-image-gen: the relay returned a body that is not JSON', { cause: error })
   }
   if (typeof payload !== 'object' || payload === null) {
-    throw new Error('recycle-image-gen: the relay returned a body that is not a JSON object')
+    throw new Error('dsh-cycle-image-gen: the relay returned a body that is not a JSON object')
   }
   const record = payload as Record<string, unknown>
   const data = record.data
   if (!Array.isArray(data) || data.length === 0) {
-    throw new Error('recycle-image-gen: the relay returned no "data" array of images')
+    throw new Error('dsh-cycle-image-gen: the relay returned no "data" array of images')
   }
   const images: DecodedImage[] = []
   for (const entry of data) {
     if (typeof entry !== 'object' || entry === null) {
-      throw new Error('recycle-image-gen: the relay returned a non-object entry in "data"')
+      throw new Error('dsh-cycle-image-gen: the relay returned a non-object entry in "data"')
     }
     images.push(await decodeEntry(entry as Record<string, unknown>, requestSignal))
   }

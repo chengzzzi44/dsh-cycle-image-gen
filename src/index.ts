@@ -11,7 +11,7 @@
  * exported `Config` schema before `apply` runs. The browser half lives in
  * `./client/index.tsx`.
  *
- * @module recycle-image-gen
+ * @module dsh-cycle-image-gen
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
@@ -529,7 +529,7 @@ function generateImageTool(
 }
 
 /** Cordis plugin name used by loader diagnostics. */
-export const name = 'recycle-image-gen'
+export const name = 'dsh-cycle-image-gen'
 
 /** Services required before the tool can register. */
 export const inject = ['tools']
@@ -564,7 +564,7 @@ export function apply(ctx: PluginContextLike, config: ImageGenConfig = {}): void
       // keeps the last good configuration and names what to fix rather than
       // failing the commit that carried it.
       ctx.logger?.warn(
-        'recycle-image-gen: keeping the previous image configuration — '
+        'dsh-cycle-image-gen: keeping the previous image configuration — '
         + (error instanceof Error ? error.message : String(error)),
       )
     }
@@ -579,7 +579,7 @@ export function apply(ctx: PluginContextLike, config: ImageGenConfig = {}): void
   })
   if (resolved.baseUrl === undefined) {
     ctx.logger?.warn(
-      'recycle-image-gen: config.baseUrl is not set, so generate_image will refuse every call; '
+      'dsh-cycle-image-gen: config.baseUrl is not set, so generate_image will refuse every call; '
       + 'set it on the image-gen card under Settings -> Plugins, or in the profile cordis.patch.yml',
     )
   }
@@ -589,11 +589,11 @@ export function apply(ctx: PluginContextLike, config: ImageGenConfig = {}): void
       // The injection above guarantees the service, so an absent value means
       // the registry resolved something else under this key: fail loud rather
       // than publish a tool that cannot commit image bytes.
-      throw new Error('recycle-image-gen: the attachments service activated but did not resolve')
+      throw new Error('dsh-cycle-image-gen: the attachments service activated but did not resolve')
     }
     attachmentCtx.tools.register(generateImageTool(ctx, store, () => resolved))
     ctx.logger?.info(
-      `recycle-image-gen: registered ${TOOL_NAME} (model ${resolved.model}, endpoint ${resolved.baseUrl ?? 'unset'})`,
+      `dsh-cycle-image-gen: registered ${TOOL_NAME} (model ${resolved.model}, endpoint ${resolved.baseUrl ?? 'unset'})`,
     )
   })
 }

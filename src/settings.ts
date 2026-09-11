@@ -7,7 +7,7 @@
  * person overrode on the settings page. The tool re-reads the resolved section
  * per call, so a committed change reaches the next image without a restart.
  *
- * @module recycle-image-gen/settings
+ * @module dsh-cycle-image-gen/settings
  */
 
 import z from '@deepseek-ai/schemastery'

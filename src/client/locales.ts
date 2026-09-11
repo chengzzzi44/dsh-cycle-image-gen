@@ -6,11 +6,11 @@
  * puts the standard `t` seat on each slot registration with `locale: NS`, so a
  * language switch re-renders the cards without a reload.
  *
- * @module recycle-image-gen/client/locales
+ * @module dsh-cycle-image-gen/client/locales
  */
 
 /** Dictionary namespace owned by this plugin. */
-export const NS = 'recycle-image-gen'
+export const NS = 'dsh-cycle-image-gen'
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
@@ -27,7 +27,7 @@ export const zh = {
   'tail.single': '生成的图片',
   'tail.many': '生成的图片（{count} 张）',
   'tail.open': '打开 {path}',
-  'card.title': 'recycle-image-gen',
+  'card.title': 'dsh-cycle-image-gen',
   'card.description': 'generate_image 使用的接口地址、模型与密钥。',
   'card.url': '接口地址',
   'card.urlHint': '到版本段为止，例如 https://relay.example.com/v1',
@@ -69,7 +69,7 @@ export const en: Record<LocaleKey, string> = {
   'tail.single': 'Generated image',
   'tail.many': 'Generated images ({count})',
   'tail.open': 'Open {path}',
-  'card.title': 'recycle-image-gen',
+  'card.title': 'dsh-cycle-image-gen',
   'card.description': 'Endpoint, model, and key used by generate_image.',
   'card.url': 'Endpoint',
   'card.urlHint': 'Up to the version segment, for example https://relay.example.com/v1',

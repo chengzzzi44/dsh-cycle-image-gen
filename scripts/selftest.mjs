@@ -101,7 +101,7 @@ const ctx = {
   tools: { register(definition) { registered = definition } },
 }
 
-const workdir = await mkdtemp(join(tmpdir(), 'recycle-image-gen-selftest-'))
+const workdir = await mkdtemp(join(tmpdir(), 'dsh-cycle-image-gen-selftest-'))
 const reference = join(workdir, 'reference.png')
 await writeFile(reference, PNG_BYTES)
 const notAnImage = join(workdir, 'notes.txt')
@@ -226,7 +226,7 @@ apply(relativeCtx, {
   outputDir: 'generated-images',
 })
 
-const sessionCwd = await mkdtemp(join(tmpdir(), 'recycle-image-gen-session-'))
+const sessionCwd = await mkdtemp(join(tmpdir(), 'dsh-cycle-image-gen-session-'))
 const relative = await relativeTool.execute(
   { prompt: 'a workspace-relative copy', n: 1 },
   { signal: AbortSignal.timeout(5000), agent: { session: { header: { cwd: sessionCwd } } } },

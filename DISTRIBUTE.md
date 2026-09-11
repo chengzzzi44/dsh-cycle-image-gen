@@ -1,13 +1,13 @@
 # 分发给同事
 
-`recycle-image-gen` 是一个完整的 DSH 插件包（Host 半边 + 浏览器半边），装进对方的 `web` profile 就能用。分两步：你打包，对方安装。
+`dsh-cycle-image-gen` 是一个完整的 DSH 插件包（Host 半边 + 浏览器半边），装进对方的 `web` profile 就能用。分两步：你打包，对方安装。
 
 ## 一、打包（你这边）
 
 ```sh
-cd /path/to/recycle-image-gen
+cd /path/to/dsh-cycle-image-gen
 npm install        # 装构建依赖，并自动执行 prepare 构建 lib/
-npm pack           # 产出 recycle-image-gen-<version>.tgz
+npm pack           # 产出 chengzzzi44-dsh-cycle-image-gen-<version>.tgz（scoped 包会带 scope 前缀）
 ```
 
 产物约 32 KB，里面是 7 个文件：
@@ -32,11 +32,11 @@ npm version patch --no-git-tag-version && npm pack
 
 ## 二、对方安装
 
-前提：对方已经能用同一套 `dsh`（本方验证过的版本见 README「已验证版本」），**PATH 里有 `pnpm`**（`dsh plugin` 把参数转发给 pnpm，缺了会以 127 退出），并且用 Web GUI（`web` profile）。如果这个包已经发布到 npm，直接 `dsh plugin --profile web add recycle-image-gen` 即可，不必发 tgz。
+前提：对方已经能用同一套 `dsh`（本方验证过的版本见 README「已验证版本」），**PATH 里有 `pnpm`**（`dsh plugin` 把参数转发给 pnpm，缺了会以 127 退出），并且用 Web GUI（`web` profile）。如果这个包已经发布到 npm，直接 `dsh plugin --profile web add @chengzzzi44/dsh-cycle-image-gen` 即可，不必发 tgz。
 
 ```sh
 # 1. 把 tgz 放到任意目录，然后装进 web profile
-dsh plugin --profile web add ./recycle-image-gen-0.1.0.tgz
+dsh plugin --profile web add ./chengzzzi44-dsh-cycle-image-gen-0.1.0.tgz
 
 # 2. 重启
 dsh web
@@ -48,7 +48,7 @@ dsh web
 
 ## 三、对方配置
 
-打开 **设置 → 插件 → 插件配置**，展开「recycle-image-gen」卡片，填三项后保存：
+打开 **设置 → 插件 → 插件配置**，展开「dsh-cycle-image-gen」卡片，填三项后保存：
 
 | 字段 | 说明 |
 |---|---|
@@ -61,7 +61,7 @@ dsh web
 ## 四、验证装好了
 
 ```sh
-dsh --profile web --dump-config | grep -A 8 recycle-image-gen
+dsh --profile web --dump-config | grep -A 8 dsh-cycle-image-gen
 ```
 
 或者直接在对话里说「画一只橘猫」，图片会出现在工具卡片里和回复下方。
@@ -69,7 +69,7 @@ dsh --profile web --dump-config | grep -A 8 recycle-image-gen
 ## 五、卸载
 
 ```sh
-dsh plugin --profile web remove recycle-image-gen
+dsh plugin --profile web remove @chengzzzi44/dsh-cycle-image-gen
 ```
 
 然后重启。

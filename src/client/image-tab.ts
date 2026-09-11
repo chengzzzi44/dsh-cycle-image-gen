@@ -9,11 +9,11 @@
  * Remote — which is how a generated image's workspace copy becomes viewable
  * beside the conversation.
  *
- * @module recycle-image-gen/client/image-tab
+ * @module dsh-cycle-image-gen/client/image-tab
  */
 
 /** This type's identity in the tab system: the key its body registers under. */
-export const IMAGE_TAB_ID = 'recycle-image-gen/image'
+export const IMAGE_TAB_ID = 'dsh-cycle-image-gen/image'
 
 /** The tab kind this package owns. */
 export const IMAGE_TAB_KIND = 'image'
@@ -162,7 +162,7 @@ export async function loadWorkspaceImage(
 ): Promise<{ data: Uint8Array, mediaType: string }> {
   const mediaType = imageMediaTypeOf(path)
   if (mediaType === undefined) {
-    throw new Error(`recycle-image-gen: "${path}" is not an image path this tab can display`)
+    throw new Error(`dsh-cycle-image-gen: "${path}" is not an image path this tab can display`)
   }
   const chunks: Uint8Array[] = []
   let offset = 0
@@ -180,7 +180,7 @@ export async function loadWorkspaceImage(
     total += chunk.length
     if (result.value.eof === true) break
     if (total > MAX_IMAGE_BYTES) {
-      throw new Error(`recycle-image-gen: "${path}" is larger than the ${MAX_IMAGE_BYTES}-byte viewer limit`)
+      throw new Error(`dsh-cycle-image-gen: "${path}" is larger than the ${MAX_IMAGE_BYTES}-byte viewer limit`)
     }
     offset += chunk.length
   }

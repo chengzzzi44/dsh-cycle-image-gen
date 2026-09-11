@@ -1,5 +1,5 @@
 {
-  "name": "recycle-image-gen",
+  "name": "@chengzzzi44/dsh-cycle-image-gen",
   "version": "0.1.0",
   "type": "module",
   "description": "Image generation tool for DeepSeek Harness over any OpenAI-compatible images endpoint, with an inline Web UI gallery.",
@@ -7,11 +7,11 @@
   "author": "chengzzzi44",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chengzzzi44/recycle-image-gen.git"
+    "url": "git+https://github.com/chengzzzi44/dsh-cycle-image-gen.git"
   },
-  "homepage": "https://github.com/chengzzzi44/recycle-image-gen#readme",
+  "homepage": "https://github.com/chengzzzi44/dsh-cycle-image-gen#readme",
   "bugs": {
-    "url": "https://github.com/chengzzzi44/recycle-image-gen/issues"
+    "url": "https://github.com/chengzzzi44/dsh-cycle-image-gen/issues"
   },
   "keywords": [
     "deepseek-harness",

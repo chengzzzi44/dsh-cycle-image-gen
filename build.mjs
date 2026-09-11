@@ -15,7 +15,7 @@ import { rm, mkdir } from 'node:fs/promises'
 import { build } from 'esbuild'
 
 /** Package name; it is the module-table id the browser half registers under. */
-const ID = 'recycle-image-gen'
+const ID = '@chengzzzi44/dsh-cycle-image-gen'
 
 /**
  * The client module table's baseline rows (`packages/client/web/src/platform.ts`),

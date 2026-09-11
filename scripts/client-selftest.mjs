@@ -53,10 +53,10 @@ const moduleRequire = (specifier) => {
 let registration
 globalThis.window = { __ModuleLoader__: { load(value) { registration = value } } }
 runInThisContext(await readFile(new URL('../lib/client.js', import.meta.url), 'utf8'))
-assert.equal(registration?.id, 'recycle-image-gen', 'the bundle registers under its package id')
+assert.equal(registration?.id, '@chengzzzi44/dsh-cycle-image-gen', 'the bundle registers under its scoped package id')
 
 const client = registration.factory(moduleRequire)
-assert.equal(client.name, 'recycle-image-gen-client')
+assert.equal(client.name, 'dsh-cycle-image-gen-client')
 assert.deepEqual(client.inject, ['slots', 'locale'], 'the plugin requires the slot registry and the locale service')
 
 /** Dictionaries the locale stub received. */
@@ -105,15 +105,15 @@ const makeCtx = (services, sink = mounted) => ({
 
 client.apply(makeCtx({ locale, uiConversation: conversation }))
 assert.equal(dictionaries.length, 1, 'the plugin registers its dictionary namespace once')
-assert.equal(dictionaries[0].ns, 'recycle-image-gen', 'the namespace is the one its slots declare')
+assert.equal(dictionaries[0].ns, 'dsh-cycle-image-gen', 'the namespace is the one its slots declare')
 assert.ok(dictionaries[0].dicts.zh && dictionaries[0].dicts.en, 'both languages are registered')
-assert.equal(dictionaries[0].dicts.zh['card.title'], 'recycle-image-gen', 'the settings card is titled with the plugin name')
-assert.equal(dictionaries[0].dicts.en['card.title'], 'recycle-image-gen', 'both languages title the card with the plugin name')
+assert.equal(dictionaries[0].dicts.zh['card.title'], 'dsh-cycle-image-gen', 'the settings card is titled with the plugin name')
+assert.equal(dictionaries[0].dicts.en['card.title'], 'dsh-cycle-image-gen', 'both languages title the card with the plugin name')
 assert.equal(mounted.definitions.length, 1, 'the fold registers once')
 assert.equal(mounted.toolview?.options.key, 'generate_image', 'the tool card is registered for the wire tool name')
-assert.equal(mounted.toolview?.options.locale, 'recycle-image-gen', 'the tool card declares its dictionary')
+assert.equal(mounted.toolview?.options.locale, 'dsh-cycle-image-gen', 'the tool card declares its dictionary')
 assert.ok(mounted.tail, 'the turn-tail entry is registered')
-assert.equal(mounted.tail.options.locale, 'recycle-image-gen', 'the turn-tail entry declares its dictionary')
+assert.equal(mounted.tail.options.locale, 'dsh-cycle-image-gen', 'the turn-tail entry declares its dictionary')
 assert.equal(typeof mounted.tail.options.select, 'function', 'a chain entry carries its selector')
 assert.equal(typeof mounted.tail.options.inject, 'function', 'the loader pair arrives through inject')
 
@@ -157,7 +157,7 @@ client.apply(settingsCtx)
 assert.equal(settingsMounted.item?.options.key, 'image-gen', 'the card claims the namespace its host half registers')
 assert.deepEqual(boundScopes, [{ namespace: 'image-gen' }], 'the card binds that namespace')
 assert.equal(typeof settingsMounted.item.component, 'function', 'the card renders through a component')
-assert.equal(settingsMounted.item.options.locale, 'recycle-image-gen', 'the card declares its dictionary')
+assert.equal(settingsMounted.item.options.locale, 'dsh-cycle-image-gen', 'the card declares its dictionary')
 assert.ok(settingsMounted.item.options.inject().controller, 'the controller rides the registration inject face')
 
 // ── the right-Sidebar image tab ────────────────────────────────────────────
@@ -184,7 +184,7 @@ client.apply(makeCtx(imageServices, tabPanes))
 
 assert.equal(tabTypes.length, 1, 'the image tab type registers once')
 const [imageType] = tabTypes
-assert.equal(imageType.id, 'recycle-image-gen/image', 'the type registers under its own id')
+assert.equal(imageType.id, 'dsh-cycle-image-gen/image', 'the type registers under its own id')
 assert.equal(imageType.kind, 'image', 'the type owns its own kind')
 assert.equal(imageType.priority, 'extension', 'the image type outranks the shipped text fallback')
 const imageAddress = 'dsh-resource://file/session/session-1/generated-images/image-sha256abc.png'
@@ -192,8 +192,8 @@ assert.equal(imageType.canOpen(imageAddress), true, 'an image path is claimed')
 assert.equal(imageType.canOpen('dsh-resource://file/session/session-1/notes.md'), false, 'a non-image path is declined')
 assert.equal(imageType.canOpen('dsh-resource://attachment/sha256:abc'), false, 'a non-file address is declined')
 assert.equal(imageType.title(imageAddress), 'image-sha256abc.png', 'the chip shows the address basename')
-assert.equal(tabPanes.tab?.options.key, 'recycle-image-gen/image', 'the body registers under the type id')
-assert.equal(tabPanes.tab?.options.locale, 'recycle-image-gen', 'the body declares its dictionary')
+assert.equal(tabPanes.tab?.options.key, 'dsh-cycle-image-gen/image', 'the body registers under the type id')
+assert.equal(tabPanes.tab?.options.locale, 'dsh-cycle-image-gen', 'the body declares its dictionary')
 
 assert.equal(typeof tabPanes.tab.options.inject, 'function', 'the body inject face is a factory the renderer calls')
 const imageFace = tabPanes.tab.options.inject()
@@ -240,7 +240,7 @@ async function tabPages(address, sessionId) {
 
 // ── 2. the turn-tail fold, straight from source ────────────────────────────
 
-const bundled = join(tmpdir(), `recycle-image-gen-turn-images-${String(process.pid)}.mjs`)
+const bundled = join(tmpdir(), `dsh-cycle-image-gen-turn-images-${String(process.pid)}.mjs`)
 await build({
   entryPoints: [new URL('../src/client/turn-images.ts', import.meta.url).pathname],
   outfile: bundled,

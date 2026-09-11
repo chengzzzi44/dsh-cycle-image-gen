@@ -13,7 +13,7 @@
  * come from the shell's `--dsw-alias-*` tokens with static fallbacks, so the
  * card follows the active theme without importing a presentation package.
  *
- * @module recycle-image-gen/client/settings-card
+ * @module dsh-cycle-image-gen/client/settings-card
  */
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
@@ -84,7 +84,7 @@ export function SettingsCard({ controller, t }: {
           <div style={styles.body}>
             {!view.writable ? <p style={styles.readOnly} role="status">{t('card.readOnly')}</p> : null}
             <TextField
-              id="recycle-image-gen-base-url"
+              id="dsh-cycle-image-gen-base-url"
               label={t('card.url')}
               hint={t('card.urlHint')}
               field={view.baseUrl}
@@ -94,7 +94,7 @@ export function SettingsCard({ controller, t }: {
               onReset={() => { void controller.reset('baseUrl') }}
             />
             <TextField
-              id="recycle-image-gen-model"
+              id="dsh-cycle-image-gen-model"
               label={t('card.model')}
               hint={t('card.modelHint')}
               field={view.model}
@@ -104,12 +104,12 @@ export function SettingsCard({ controller, t }: {
               onReset={() => { void controller.reset('model') }}
             />
             <div style={styles.row}>
-              <label style={styles.label} htmlFor="recycle-image-gen-key">
+              <label style={styles.label} htmlFor="dsh-cycle-image-gen-key">
                 {t('card.key')}
                 <span style={styles.badge}>{view.keyConfigured ? t('card.keySet') : t('card.keyUnset')}</span>
               </label>
               <input
-                id="recycle-image-gen-key"
+                id="dsh-cycle-image-gen-key"
                 type="password"
                 autoComplete="off"
                 spellCheck={false}

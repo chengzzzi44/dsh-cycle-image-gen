@@ -40,20 +40,20 @@ macOS 上落在 `~/Library/Preferences/pnpm/config.yaml`。token **不要**提�
 ## 三、发布
 
 ```sh
-cd /path/to/recycle-image-gen
+cd /path/to/dsh-cycle-image-gen
 pnpm publish
 ```
 
 - `prepare` 自动跑 `node build.mjs` 构建 `lib/`，不用手动 build；
-- 成功输出 `+ recycle-image-gen@<版本>`。
+- 成功输出 `+ dsh-cycle-image-gen@<版本>`。
 
 验证：
 
 ```sh
-pnpm view recycle-image-gen version
+pnpm view @chengzzzi44/dsh-cycle-image-gen version
 ```
 
-再打开 https://www.npmjs.com/package/recycle-image-gen 确认描述、关键词、仓库链接、两张效果图。
+再打开 https://www.npmjs.com/package/@chengzzzi44/dsh-cycle-image-gen 确认描述、关键词、仓库链接、两张效果图。
 
 ## 四、发下一个版本
 
@@ -90,5 +90,5 @@ pnpm whoami
 
 ## 七、不发 npm 的替代分发
 
-- **tgz**：`pnpm pack` 生成 `recycle-image-gen-<版本>.tgz`，对方 `dsh plugin --profile web add ./recycle-image-gen-<版本>.tgz`。
-- **GitHub 源码**：对方 `dsh plugin --profile web add github:chengzzzi44/recycle-image-gen`。git 安装拉源码并跑 `prepare` 构建，pnpm ≥10 会拦截构建脚本，需要在 profile 的 `pnpm-workspace.yaml` 里按提示加 `allowBuilds` 后重试。
+- **tgz**：`pnpm pack` 生成 `chengzzzi44-dsh-cycle-image-gen-<版本>.tgz`（scoped 包带 scope 前缀），对方 `dsh plugin --profile web add ./chengzzzi44-dsh-cycle-image-gen-<版本>.tgz`。
+- **GitHub 源码**：对方 `dsh plugin --profile web add github:chengzzzi44/dsh-cycle-image-gen`。git 安装拉源码并跑 `prepare` 构建，pnpm ≥10 会拦截构建脚本，需要在 profile 的 `pnpm-workspace.yaml` 里按提示加 `allowBuilds` 后重试。

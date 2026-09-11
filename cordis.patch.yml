@@ -1,11 +1,11 @@
-# The recycle-image-gen bundle layer: one dual-face row.
+# The dsh-cycle-image-gen bundle layer: one dual-face row.
 #
 # The node half (the package's `main`, lib/index.js) registers the
 # `generate_image` tool and the `image-gen` settings section. The browser half
 # (`exports["./client"]`, lib/client.js) registers the keyed
 # `tool.call.toolview` card for that tool and the `image-gen` card in the
 # Plugins settings section, which `dsh-client-modules` serves as
-# /plugins/recycle-image-gen/client.js because this row's package declares
+# /plugins/dsh-cycle-image-gen/client.js because this row's package declares
 # `dsh.client`.
 #
 # Every value below is a default. Later layers win per row and a patch replaces
@@ -16,7 +16,7 @@
 
 - insert:
     - id: image-gen
-      name: recycle-image-gen
+      name: '@chengzzzi44/dsh-cycle-image-gen'
       config:
         # Full URL prefix up to and including the version segment. Unset leaves
         # the tool registered but unusable: it reports exactly which field to set.

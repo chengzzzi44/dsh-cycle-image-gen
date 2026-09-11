@@ -6,7 +6,7 @@
  * a re-encode. The address is the tab's whole identity: it names the session
  * whose workspace is read and the image inside it.
  *
- * @module recycle-image-gen/client/ImagePreview
+ * @module dsh-cycle-image-gen/client/ImagePreview
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -80,7 +80,7 @@ export function ImagePreview({ useTabInfo, sessionId, load, t }: ImagePreviewPro
       (error: unknown) => {
         if (cancelled) return
         const detail = error instanceof Error ? error.message : String(error)
-        console.warn('recycle-image-gen: the image tab could not read', address, error)
+        console.warn('dsh-cycle-image-gen: the image tab could not read', address, error)
         setFailure(detail)
       },
     )

@@ -18,7 +18,7 @@
  * section, so the relay endpoint, the model, and the key can be set from the
  * Web interface instead of `cordis.patch.yml`.
  *
- * @module recycle-image-gen/client
+ * @module dsh-cycle-image-gen/client
  */
 
 import { useEffect, useMemo, useState } from 'react'
@@ -323,7 +323,7 @@ const STYLES = {
 } satisfies Record<string, CSSProperties>
 
 /** Client plugin name used by loader diagnostics. */
-export const name = 'recycle-image-gen-client'
+export const name = 'dsh-cycle-image-gen-client'
 
 /** The services this presentation plugin requires. */
 export const inject = ['slots', 'locale']
@@ -343,9 +343,9 @@ export function apply(ctx: ClientContextLike): void {
   if (locale === undefined) {
     // `locale` is a declared injection, so a context without it means the
     // composition is malformed: fail loud rather than render dictionary keys.
-    throw new Error('recycle-image-gen: the client context has no locale service to register dictionaries with')
+    throw new Error('dsh-cycle-image-gen: the client context has no locale service to register dictionaries with')
   }
-  ctx.effect(() => locale.register(NS, { zh, en }), 'recycle-image-gen: dictionaries')
+  ctx.effect(() => locale.register(NS, { zh, en }), 'dsh-cycle-image-gen: dictionaries')
   registerTurnTail(ctx)
   registerSettingsCard(ctx)
   registerImageTab(ctx)
@@ -373,7 +373,7 @@ function registerImageTab(ctx: ClientContextLike): void {
     const remote = tabCtx.get('remote.workspaceFiles') as WorkspaceFilesRemoteLike | undefined
     if (tabs === undefined || typeof tabs.register !== 'function' || remote === undefined) return
     try {
-      tabCtx.effect(() => tabs.register(imageTabDefinition()), 'recycle-image-gen: image tab type')
+      tabCtx.effect(() => tabs.register(imageTabDefinition()), 'dsh-cycle-image-gen: image tab type')
       // The renderer calls this factory once per registration and session
       // binding and caches the result, so a fresh object here stays stable for
       // the body's effect; passing a plain object instead throws in the runner.
@@ -392,7 +392,7 @@ function registerImageTab(ctx: ClientContextLike): void {
     } catch (error: unknown) {
       // A sidebar surface this plugin does not recognize must cost the tab,
       // never the tool card registered by the same apply.
-      console.warn('recycle-image-gen: the image tab could not be registered, so image copies open in the text preview instead', error)
+      console.warn('dsh-cycle-image-gen: the image tab could not be registered, so image copies open in the text preview instead', error)
     }
   })
 }
@@ -423,7 +423,7 @@ function registerSettingsCard(ctx: ClientContextLike): void {
       () => settingsCtx.get('remote.credentials') as CredentialsRemoteLike | undefined,
       credentialWatch(remote),
     )
-    settingsCtx.effect(() => () => { controller.dispose() }, 'recycle-image-gen: settings controller')
+    settingsCtx.effect(() => () => { controller.dispose() }, 'dsh-cycle-image-gen: settings controller')
     settingsCtx.slots.inject('settings.plugin.item', () => settingsCtx.slots.register({
       name: 'settings.plugin.item',
       key: IMAGE_GEN_SETTINGS_NAMESPACE,
@@ -467,7 +467,7 @@ function registerTurnTail(ctx: ClientContextLike): void {
       || events === undefined || typeof registerEvent !== 'function'
       || typeof imageUrl !== 'function' || typeof peekImageUrl !== 'function') {
       console.warn(
-        'recycle-image-gen: the mounted uiConversation service does not expose the turn-tail surface this row needs'
+        'dsh-cycle-image-gen: the mounted uiConversation service does not expose the turn-tail surface this row needs'
         + ' (events.register / imageUrl / peekImageUrl), so generated images render in the tool card only',
       )
       return
@@ -495,7 +495,7 @@ function registerTurnTail(ctx: ClientContextLike): void {
     } catch (error: unknown) {
       // A conversation surface this plugin does not recognize must cost the row,
       // never the tool card registered by the same apply.
-      console.warn('recycle-image-gen: the turn-tail surface on this dsh rejected the registration, so generated images render in the tool card only', error)
+      console.warn('dsh-cycle-image-gen: the turn-tail surface on this dsh rejected the registration, so generated images render in the tool card only', error)
     }
   })
 }

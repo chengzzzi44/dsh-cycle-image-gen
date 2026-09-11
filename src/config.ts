@@ -2,7 +2,7 @@
  * Plugin configuration: the deployment-varying values, all of them settable
  * from `cordis.yml`.
  *
- * @module recycle-image-gen/config
+ * @module dsh-cycle-image-gen/config
  */
 
 /** Raw `config` object as it arrives from the Loader, before defaults. */
@@ -90,7 +90,7 @@ export const DEFAULT_MAX_IMAGES_PER_CALL = 4
 function requireType(field: string, value: unknown, expected: 'string' | 'number' | 'object'): void {
   const actual = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value
   const ok = expected === 'object' ? actual === 'object' && !Array.isArray(value) : actual === expected
-  if (!ok) throw new Error(`recycle-image-gen: config.${field} must be a ${expected}, received ${actual}`)
+  if (!ok) throw new Error(`dsh-cycle-image-gen: config.${field} must be a ${expected}, received ${actual}`)
 }
 
 /**
@@ -112,26 +112,26 @@ export function resolveConfig(raw: ImageGenConfig | undefined): ResolvedImageGen
 
   const timeoutMs = config.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
-    throw new Error('recycle-image-gen: config.requestTimeoutMs must be a positive finite number')
+    throw new Error('dsh-cycle-image-gen: config.requestTimeoutMs must be a positive finite number')
   }
   const maxImages = config.maxImagesPerCall ?? DEFAULT_MAX_IMAGES_PER_CALL
   if (!Number.isInteger(maxImages) || maxImages < 1) {
-    throw new Error('recycle-image-gen: config.maxImagesPerCall must be a positive integer')
+    throw new Error('dsh-cycle-image-gen: config.maxImagesPerCall must be a positive integer')
   }
   const endpointPath = config.endpointPath ?? DEFAULT_ENDPOINT_PATH
   if (!endpointPath.startsWith('/')) {
-    throw new Error('recycle-image-gen: config.endpointPath must start with "/"')
+    throw new Error('dsh-cycle-image-gen: config.endpointPath must start with "/"')
   }
   const editEndpointPath = config.editEndpointPath ?? DEFAULT_EDIT_ENDPOINT_PATH
   if (!editEndpointPath.startsWith('/')) {
-    throw new Error('recycle-image-gen: config.editEndpointPath must start with "/"')
+    throw new Error('dsh-cycle-image-gen: config.editEndpointPath must start with "/"')
   }
   const maxInputImageBytes = config.maxInputImageBytes ?? DEFAULT_MAX_INPUT_IMAGE_BYTES
   if (!Number.isInteger(maxInputImageBytes) || maxInputImageBytes < 1) {
-    throw new Error('recycle-image-gen: config.maxInputImageBytes must be a positive integer')
+    throw new Error('dsh-cycle-image-gen: config.maxInputImageBytes must be a positive integer')
   }
   if (config.baseUrl !== undefined && !/^https?:\/\//u.test(config.baseUrl)) {
-    throw new Error('recycle-image-gen: config.baseUrl must be an absolute http(s) URL')
+    throw new Error('dsh-cycle-image-gen: config.baseUrl must be an absolute http(s) URL')
   }
   return {
     baseUrl: config.baseUrl,

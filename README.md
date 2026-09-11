@@ -1,13 +1,13 @@
-# recycle-image-gen
+# dsh-cycle-image-gen
 
-[![npm version](https://img.shields.io/npm/v/recycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/recycle-image-gen)
-[![npm downloads](https://img.shields.io/npm/dm/recycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/recycle-image-gen)
-[![license](https://img.shields.io/npm/l/recycle-image-gen)](LICENSE)
-[![Node](https://img.shields.io/node/v/recycle-image-gen)](package.json)
+[![npm version](https://img.shields.io/npm/v/@chengzzzi44/dsh-cycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/@chengzzzi44/dsh-cycle-image-gen)
+[![npm downloads](https://img.shields.io/npm/dm/@chengzzzi44/dsh-cycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/@chengzzzi44/dsh-cycle-image-gen)
+[![license](https://img.shields.io/npm/l/@chengzzzi44/dsh-cycle-image-gen)](LICENSE)
+[![Node](https://img.shields.io/node/v/@chengzzzi44/dsh-cycle-image-gen)](package.json)
 
 DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，通过任意 **OpenAI 兼容**的端点（中转站）**文生图**或**图生图**，生成结果既作为耐久附件进入会话，也内联显示在 Web UI 的对话里。
 
-安装：`dsh plugin --profile web add recycle-image-gen`（包主页：https://www.npmjs.com/package/recycle-image-gen）
+安装：`dsh plugin --profile web add @chengzzzi44/dsh-cycle-image-gen`（包主页：https://www.npmjs.com/package/@chengzzzi44/dsh-cycle-image-gen）
 
 | 半边 | 产物 | 作用 |
 |---|---|---|
@@ -18,11 +18,11 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 
 **文生图** —— 图片内联显示在工具结果与回复下方的缩略图行里，同时落一份可在右侧栏打开的工作区副本：
 
-![生成一只小狗：文生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/text-to-image.png)
+![生成一只小狗：文生图](https://raw.githubusercontent.com/chengzzzi44/dsh-cycle-image-gen/main/docs/images/text-to-image.png)
 
 **图生图** —— 把上一张图的路径填进 `image` 参数继续编辑，原图保留、新图另存：
 
-![让小狗站起来戴上帽子：图生图](https://raw.githubusercontent.com/chengzzzi44/recycle-image-gen/main/docs/images/image-to-image.png)
+![让小狗站起来戴上帽子：图生图](https://raw.githubusercontent.com/chengzzzi44/dsh-cycle-image-gen/main/docs/images/image-to-image.png)
 
 ## 图显示在哪里
 
@@ -42,14 +42,14 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 **从 npm 安装**（推荐）：
 
 ```sh
-dsh plugin --profile web add recycle-image-gen
+dsh plugin --profile web add @chengzzzi44/dsh-cycle-image-gen
 ```
 
 **从本仓库源码安装**：
 
 ```sh
-git clone https://github.com/chengzzzi44/recycle-image-gen.git
-cd recycle-image-gen && npm install    # 装构建依赖并执行 prepare，产出 lib/
+git clone https://github.com/chengzzzi44/dsh-cycle-image-gen.git
+cd dsh-cycle-image-gen && npm install    # 装构建依赖并执行 prepare，产出 lib/
 dsh plugin --profile web add "$PWD"
 ```
 
@@ -58,7 +58,7 @@ dsh plugin --profile web add "$PWD"
 包声明了 `dsh.bundle`，所以 `dsh plugin` 会把它的 patch 层追加到 `$DSH_HOME/profiles/web/package.json` 的 `dsh.profile.bundles`（`DSH_HOME` 默认 `~/.dsh`）。验证层已生效：
 
 ```sh
-dsh --profile web --dump-config | grep -A 8 "recycle-image-gen"
+dsh --profile web --dump-config | grep -A 8 "dsh-cycle-image-gen"
 ```
 
 > 在 DeepSeek Harness 源码 checkout 里工作时，把上面的 `dsh` 换成 `pnpm dsh`。
@@ -137,7 +137,7 @@ dsh web
 
 ```sh
 # 在 DeepSeek Harness 源码 checkout 里执行；overlay 用绝对路径，因此与 cwd 无关
-pnpm dsh --profile web --patch /path/to/recycle-image-gen/examples/web-overlay.cordis.patch.yml --port 3099
+pnpm dsh --profile web --patch /path/to/dsh-cycle-image-gen/examples/web-overlay.cordis.patch.yml --port 3099
 ```
 
 ## 配置项
@@ -213,7 +213,7 @@ npm test             # = npm run selftest：两个无密钥自测，见下
 - **拒绝路径**：`replace` 类型的结果不匹配、失败的调用不贡献、收尾 seq 之后的图片被排除、无图片时 selector 返回 `null` 让出 chain
 - inject 工厂拿到 session id 并把 `imageUrl` 绑定到该 session
 
-**已装载验证**（需真实运行）：`--dump-config` 显示该行被 profile 层覆盖；浏览器清单含 `recycle-image-gen/client.js`；combo 产物含 `conversation.chat.turnTail` 与 turn 数据键；`settings.describe` 里出现 `image-gen` 命名空间。
+**已装载验证**（需真实运行）：`--dump-config` 显示该行被 profile 层覆盖；浏览器清单含该插件的 `client.js`；combo 产物含 `conversation.chat.turnTail` 与 turn 数据键；`settings.describe` 里出现 `image-gen` 命名空间。
 
 ## 已知限制
 
@@ -226,7 +226,7 @@ npm test             # = npm run selftest：两个无密钥自测，见下
 - **卡片是精简版。** 没有灯箱放大、没有下载按钮；点击图片会用 `openFile` 打开工作区副本（仅当配置了 `outputDir`），由右侧栏的 image tab 全尺寸显示。图片超过 32 MB 时该 tab 会拒绝加载（附件库里仍有原件）。
 - **收尾缩略图行可能被产出文件行挤掉。** `conversation.chat.turnTail` 是 chain，同 turn 只渲染第一个认领者；随附的 web 组合里 `ui-deliverables` 的条目先注册，所以既生图又改文件的 turn 由它认领。
 - **缩略图行只有图片本身和文件名。** turn-tail 的 owner 不提供灯箱或布局上下文，所以这一行是固定 120px 高的缩略图，不是完整画廊。
-- **文案走 `ctx.locale` 字典（命名空间 `recycle-image-gen`）。** 因此浏览器半边把 `locale` 声明为必需依赖：组合里没有 locale 服务时整个浏览器半边不激活（Host 半边的工具不受影响）。
+- **文案走 `ctx.locale` 字典（命名空间 `dsh-cycle-image-gen`）。** 因此浏览器半边把 `locale` 声明为必需依赖：组合里没有 locale 服务时整个浏览器半边不激活（Host 半边的工具不受影响）。
 - **设置段 schema 与运行时校验是两处。** 设置段用 `@deepseek-ai/schemastery` 声明（含绝对 URL 规则），工具运行时仍走手写的 `resolveConfig`：schema 管住界面写入，`resolveConfig` 管住每一次调用，两者共享 `src/config.ts` 的默认值常量。schema 表达不了的约束（例如 `maxImagesPerCall` 至少为 1）由 `resolveConfig` 拒绝，此时插件保留上一份好配置并告警。
 - **设置卡片只覆盖三项。** `outputDir`、`defaultSize`、`endpointPath`、`extraBody` 等仍要写 `cordis.patch.yml`；卡片是有意做窄的，只放最常改的三个值。
 - **密钥字段不回显、也不能清空。** 只显示「已配置 / 未配置」；换 key 直接填新的即可，想彻底删掉引用目前要走 `credentials.unset`（界面没做这个按钮）。

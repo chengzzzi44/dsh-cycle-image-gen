@@ -10,7 +10,7 @@
  * The client bundle cannot import a harness package, so the event shapes are
  * narrowed structurally and the wire tool name is restated.
  *
- * @module recycle-image-gen/client/turn-images
+ * @module dsh-cycle-image-gen/client/turn-images
  */
 
 /** Wire tool name the host half registers; also the browser card's key. */
@@ -21,7 +21,7 @@ const GENERATE_TOOL = 'generate_image'
  * location value's `key` equals the publishing definition's `kind`, so this one
  * constant is both; naming them separately is what let them drift.
  */
-export const GENERATED_TAIL_KIND = 'recycle-image-gen-tail'
+export const GENERATED_TAIL_KIND = 'dsh-cycle-image-gen-tail'
 
 /** Durable image reference as it crosses the wire inside an `image` content block. */
 export interface GeneratedTailImage {
@@ -150,7 +150,7 @@ function contain<T>(fallback: T, operation: () => T): T {
     if (!reported) {
       reported = true
       console.error(
-        'recycle-image-gen: the generated-image turn-tail fold failed, so that row is disabled for this session;'
+        'dsh-cycle-image-gen: the generated-image turn-tail fold failed, so that row is disabled for this session;'
         + ' the conversation itself is unaffected',
         error,
       )
@@ -201,7 +201,7 @@ export const generatedTailDefinition = {
       // The assembler validates the published turn as a non-negative safe
       // integer, so refuse anything else at the source rather than publishing it.
       if (match.event.type !== 'turn/start' || typeof turn !== 'number' || !Number.isSafeInteger(turn) || turn < 0) {
-        throw new Error('recycle-image-gen-tail start requires a turn/start event carrying a non-negative safe-integer turn')
+        throw new Error('dsh-cycle-image-gen-tail start requires a turn/start event carrying a non-negative safe-integer turn')
       }
       return { turn, calls: new Map(), images: [] }
     })

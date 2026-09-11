@@ -10,7 +10,7 @@
  * a dsh without the settings surface costs this card and nothing else the
  * plugin registers.
  *
- * @module recycle-image-gen/client/settings-controller
+ * @module dsh-cycle-image-gen/client/settings-controller
  */
 
 /** Settings namespace the host half registers; the card claims this slot key. */
@@ -154,7 +154,7 @@ function detailOf(error: unknown): string {
 /** Raised when this dsh serves no credentials domain, so the card can name that instead of reporting a bare failure. */
 class MissingCredentialsError extends Error {
   constructor() {
-    super('recycle-image-gen: this dsh serves no credentials domain')
+    super('dsh-cycle-image-gen: this dsh serves no credentials domain')
     this.name = 'MissingCredentialsError'
   }
 }

@@ -8,7 +8,7 @@
  * view hands its message and tool galleries, so this row needs no transport
  * knowledge of its own and no change to any shipped package.
  *
- * @module recycle-image-gen/client/GeneratedTail
+ * @module dsh-cycle-image-gen/client/GeneratedTail
  */
 
 import { useEffect, useState } from 'react'
