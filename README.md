@@ -45,6 +45,12 @@ DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，
 dsh plugin --profile web add @chengzzzi44/dsh-cycle-image-gen
 ```
 
+升级到已发布的最新版（或用 `@x.y.z` 固定版本）：
+
+```sh
+dsh plugin --profile web add @chengzzzi44/dsh-cycle-image-gen@latest
+```
+
 **从本仓库源码安装**：
 
 ```sh
