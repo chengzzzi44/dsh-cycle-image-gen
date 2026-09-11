@@ -374,20 +374,20 @@ function registerImageTab(ctx: ClientContextLike): void {
     if (tabs === undefined || typeof tabs.register !== 'function' || remote === undefined) return
     try {
       tabCtx.effect(() => tabs.register(imageTabDefinition()), 'recycle-image-gen: image tab type')
-      // One stable face object: the body keys its load effect on the loader's
-      // identity, so a factory invoked per render would re-read on every render.
-      const face = {
-        load: async (address: string, sessionId: string, signal: AbortSignal) => {
-          const parsed = parseFileAddress(address)
-          if (parsed === undefined) throw new Error(`not a file address "${address}"`)
-          return loadWorkspaceImage(remote, parsed.sessionId ?? sessionId, parsed.path, signal)
-        },
-      }
+      // The renderer calls this factory once per registration and session
+      // binding and caches the result, so a fresh object here stays stable for
+      // the body's effect; passing a plain object instead throws in the runner.
       tabCtx.slots.inject('sidebar.right.pane.tab', () => tabCtx.slots.register({
         name: 'sidebar.right.pane.tab',
         key: IMAGE_TAB_ID,
         locale: NS,
-        inject: face,
+        inject: () => ({
+          load: async (address: string, sessionId: string, signal: AbortSignal) => {
+            const parsed = parseFileAddress(address)
+            if (parsed === undefined) throw new Error(`not a file address "${address}"`)
+            return loadWorkspaceImage(remote, parsed.sessionId ?? sessionId, parsed.path, signal)
+          },
+        }),
       }, ImagePreview))
     } catch (error: unknown) {
       // A sidebar surface this plugin does not recognize must cost the tab,

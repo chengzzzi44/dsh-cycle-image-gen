@@ -195,10 +195,8 @@ assert.equal(imageType.title(imageAddress), 'image-sha256abc.png', 'the chip sho
 assert.equal(tabPanes.tab?.options.key, 'recycle-image-gen/image', 'the body registers under the type id')
 assert.equal(tabPanes.tab?.options.locale, 'recycle-image-gen', 'the body declares its dictionary')
 
-/** The registration's inject face: a plain object, or a factory returning one. */
-const imageFace = typeof tabPanes.tab.options.inject === 'function'
-  ? tabPanes.tab.options.inject()
-  : tabPanes.tab.options.inject
+assert.equal(typeof tabPanes.tab.options.inject, 'function', 'the body inject face is a factory the renderer calls')
+const imageFace = tabPanes.tab.options.inject()
 const loaded = await imageFace.load(imageAddress, 'session-1', new AbortController().signal)
 assert.equal(loaded.mediaType, 'image/png', 'the extension names the media type')
 assert.ok(Buffer.from(loaded.data).equals(PNG_BYTES), 'the tab loads the exact file bytes')
@@ -227,9 +225,7 @@ client.apply(makeCtx({
     }),
   },
 }, failPanes))
-const failFace = typeof failPanes.tab.options.inject === 'function'
-  ? failPanes.tab.options.inject()
-  : failPanes.tab.options.inject
+const failFace = failPanes.tab.options.inject()
 const refusal = await failFace.load(imageAddress, 'session-1', new AbortController().signal)
   .then(() => null, error => error)
 assert.match(refusal.message, /is outside the workspace/u, 'a refused read surfaces the Host reason in the pane')
