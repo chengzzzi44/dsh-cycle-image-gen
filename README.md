@@ -1,6 +1,13 @@
 # recycle-image-gen
 
+[![npm version](https://img.shields.io/npm/v/recycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/recycle-image-gen)
+[![npm downloads](https://img.shields.io/npm/dm/recycle-image-gen?color=cb3837&logo=npm)](https://www.npmjs.com/package/recycle-image-gen)
+[![license](https://img.shields.io/npm/l/recycle-image-gen)](LICENSE)
+[![Node](https://img.shields.io/node/v/recycle-image-gen)](package.json)
+
 DeepSeek Harness 的生图插件：模型可调用的 `generate_image` 工具，通过任意 **OpenAI 兼容**的端点（中转站）**文生图**或**图生图**，生成结果既作为耐久附件进入会话，也内联显示在 Web UI 的对话里。
+
+安装：`dsh plugin --profile web add recycle-image-gen`（包主页：https://www.npmjs.com/package/recycle-image-gen）
 
 | 半边 | 产物 | 作用 |
 |---|---|---|
