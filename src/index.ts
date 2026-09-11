@@ -14,6 +14,7 @@
  * @module dsh-cycle-image-gen
  */
 
+import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { isAbsolute, join, resolve } from 'node:path'
 import { resolveConfig, type ImageGenConfig, type ResolvedImageGenConfig } from './config.ts'
@@ -358,8 +359,11 @@ function resolveOutputDir(configured: string, exec: ToolRunContextLike): string 
 }
 
 /**
- * Write the workspace copy of one image. Content-addressed names make the write
- * idempotent, so a retried call with identical bytes cannot produce two files.
+ * Write the workspace copy of one image.
+ *
+ * The name carries a digest of the exact attachment id, so one image always
+ * writes one path (a retry overwrites its own file) and two different images
+ * never share one. A short readable prefix keeps the file recognizable by eye.
  * @param directory - configured absolute output directory.
  * @param ref - the durable reference the bytes were committed under.
  * @param data - exact image bytes.
@@ -368,10 +372,11 @@ function resolveOutputDir(configured: string, exec: ToolRunContextLike): string 
 async function writeWorkspaceCopy(directory: string, ref: AttachmentRefLike, data: Uint8Array): Promise<string> {
   await mkdir(directory, { recursive: true })
   // The attachment id is opaque and need not be filename-safe: the local store
-  // mints `sha256:<hex>`, and a colon is illegal in a Windows filename. Keep
-  // only alphanumerics so one prefix rule holds on every platform.
-  const stem = ref.attachmentId.replace(/[^0-9a-z]/giu, '').slice(0, 16) || 'image'
-  const path = join(directory, `image-${stem}${EXTENSIONS[ref.mediaType]}`)
+  // mints `sha256:<hex>`, and a colon is illegal in a Windows filename. The
+  // digest is taken over the exact id, so sanitizing can never merge two ids.
+  const digest = createHash('sha256').update(ref.attachmentId).digest('hex').slice(0, 32)
+  const readable = ref.attachmentId.replace(/[^0-9a-z]/giu, '').slice(0, 8) || 'image'
+  const path = join(directory, `image-${readable}-${digest}${EXTENSIONS[ref.mediaType]}`)
   await writeFile(path, data)
   return path
 }

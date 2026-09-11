@@ -1,6 +1,6 @@
 {
   "name": "@chengzzzi44/dsh-cycle-image-gen",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Image generation tool for DeepSeek Harness over any OpenAI-compatible images endpoint, with an inline Web UI gallery.",
   "license": "MIT",

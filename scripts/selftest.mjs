@@ -238,6 +238,54 @@ assert.ok(
 )
 assert.ok((await readFile(relativePath)).equals(PNG_BYTES), 'the workspace copy holds the exact returned bytes')
 
+// ── two different attachment ids never share one workspace path ────────────
+// The reported regression: sanitizing and truncating the id merged these two.
+
+const collidingIds = [
+  'sha256:aaaa0000000000000000000000000000000000000000000000000000000001',
+  'sha256aaaa0000000000000000000000000000000000000000000000000000000002',
+]
+const legacyStem = id => id.replace(/[^0-9a-z]/giu, '').slice(0, 16)
+assert.equal(
+  legacyStem(collidingIds[0]),
+  legacyStem(collidingIds[1]),
+  'the reported case really did collapse to one stem under the old naming',
+)
+
+/** A store handing back those two ids for the two images one call returns. */
+let savedCount = 0
+const collisionStore = {
+  imageLimits: { mediaTypes: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'] },
+  async saveImage(input) {
+    const attachmentId = collidingIds[savedCount] ?? `sha256:fallback${String(savedCount)}`
+    savedCount += 1
+    return { attachmentId, mediaType: input.mediaType, bytes: input.data.byteLength, width: 1, height: 1 }
+  },
+}
+
+/** The tool definition one colliding-id deployment registers. */
+let collisionTool
+const collisionCtx = {
+  logger: { info() {}, warn() {} },
+  get: name => (name === 'attachments' ? collisionStore : undefined),
+  inject: (names, callback) => { callback(collisionCtx) },
+  tools: { register(definition) { collisionTool = definition } },
+}
+const collisionDir = await mkdtemp(join(tmpdir(), 'dsh-cycle-image-gen-collide-'))
+apply(collisionCtx, {
+  baseUrl: `http://127.0.0.1:${port}/v1`,
+  apiKeyEnv: 'TEST_IMAGE_KEY',
+  outputDir: collisionDir,
+})
+const collisionResult = await collisionTool.execute(
+  { prompt: 'two images with colliding legacy stems', n: 1 },
+  { signal: AbortSignal.timeout(5000) },
+)
+const [firstCopy, secondCopy] = collisionResult.images.map(image => image.path)
+assert.notEqual(firstCopy, secondCopy, 'different attachment ids write different files')
+assert.ok((await readFile(firstCopy)).equals(PNG_BYTES), 'the first copy survives')
+assert.ok((await readFile(secondCopy)).equals(PNG_BYTES), 'the second copy is not an overwrite')
+
 // ── the settings section ───────────────────────────────────────────────────
 
 /** The section registration one settings-mounting deployment hands back. */
