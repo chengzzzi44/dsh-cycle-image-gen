@@ -16,8 +16,8 @@ import type { Translate } from './locales.ts'
 /** The tab information hook the Sidebar supplies to one tab body. */
 export type UseTabInfoLike = () => {
   tab: {
-    /** The resource address this tab displays. */
-    address: string
+    /** The resource address this tab displays; a tab record's `contentId`. */
+    contentId: string
     /** The tab record's lifetime. */
     signal: AbortSignal
   }
@@ -56,7 +56,7 @@ function blobPart(data: Uint8Array): ArrayBuffer {
  */
 export function ImagePreview({ useTabInfo, sessionId, load, t }: ImagePreviewProps): ReactNode {
   const { tab } = useTabInfo()
-  const address = tab.address
+  const address = tab.contentId
   // The tab object is rebuilt on every render, so the effect keys on the address
   // and session alone and reads the loader and the record signal through a ref:
   // depending on either identity would re-read on every render.
